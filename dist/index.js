@@ -83,16 +83,7 @@ app.post(endPoints.registration, (req, res) => __awaiter(void 0, void 0, void 0,
     res.status(201).json({ message: 'User registered successfully' });
     return console.log('Соединение закрыто');
 }));
-app.post(endPoints.login, (req, res) => {
-    let loginData = req.body;
-    res.status(200).json(loginData);
-    return console.log('Соединение закрыто');
-});
-app.listen(PORT, () => {
-    console.log(`I started listening port: ${PORT}`);
-});
-// Login with an existing user
-app.post('/login', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+app.post(endPoints.login, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { email, password } = req.body;
     // Check if user exists
     const user = users.find((user) => user.email === email);
@@ -107,8 +98,8 @@ app.post('/login', (req, res) => __awaiter(void 0, void 0, void 0, function* () 
     // Generate JWT token
     const token = jwt.sign({ email }, 'secret');
     res.status(200).json({ message: 'Logged in successfully', token });
+    return console.log('Соединение закрыто');
 }));
-// Start the server
-app.listen(3000, () => {
-    console.log('Server started on port 3000');
+app.listen(PORT, () => {
+    console.log(`I started listening port: ${PORT}`);
 });

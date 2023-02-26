@@ -91,31 +91,7 @@ app.post(endPoints.registration, async (req, res) => {
 })
 
 
-app.post(endPoints.login, (req, res) => {
-    let loginData = req.body
-    res.status(200).json(loginData)
-    return console.log('Соединение закрыто')
-})
-
-
-app.listen(PORT, () => {
-    console.log(`I started listening port: ${PORT}`)
-})
-
-
-
-
-
-
-
-
-
-
-
-
-
-// Login with an existing user
-app.post('/login', async (req, res) => {
+app.post(endPoints.login, async (req, res) => {
     const { email, password } = req.body;
 
     // Check if user exists
@@ -134,9 +110,10 @@ app.post('/login', async (req, res) => {
     const token = jwt.sign({ email }, 'secret');
 
     res.status(200).json({ message: 'Logged in successfully', token });
-});
+    return console.log('Соединение закрыто')
+})
 
-// Start the server
-app.listen(3000, () => {
-    console.log('Server started on port 3000');
-});
+
+app.listen(PORT, () => {
+    console.log(`I started listening port: ${PORT}`)
+})
