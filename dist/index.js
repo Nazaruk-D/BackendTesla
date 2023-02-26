@@ -10,10 +10,10 @@ const app = (0, express_1.default)();
 const PORT = process.env.PORT || 7542;
 const endPoints = {
     startPage: '/',
-    me: 'auth/me',
-    registration: 'auth/register',
-    login: 'auth/login',
-    logout: 'auth/me'
+    me: '/auth/me',
+    registration: '/auth/register',
+    login: '/auth/login',
+    logout: '/auth/me'
 };
 const connection = mysql.createConnection({
     host: 'gateway01.eu-central-1.prod.aws.tidbcloud.com',
@@ -21,7 +21,6 @@ const connection = mysql.createConnection({
     user: '4AfZkWpmjEUaTXa.root',
     password: 'YKY0nwjX0Ho0R5xo',
     database: 'letters',
-    // database: 'test',
     ssl: {
         minVersion: 'TLSv1.2',
         rejectUnauthorized: true
