@@ -61,7 +61,8 @@ app.post(endPoints.registration, (req, res) => {
     return console.log('Соединение закрыто');
 });
 app.post(endPoints.login, (req, res) => {
-    res.status(200).json({ message: JSON.stringify(req.body) });
+    let loginData = req.body;
+    res.status(200).json(loginData);
     return console.log('Соединение закрыто');
 });
 app.listen(PORT, () => {
