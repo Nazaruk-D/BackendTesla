@@ -66,12 +66,6 @@ app.get(endPoints.startPage, (req, res) => {
     return console.log('Соединение закрыто')
 })
 
-
-app.get(endPoints.me, (req, res) => {
-    res.status(200).json({message: "response me request"})
-    return console.log('Соединение закрыто')
-})
-
 app.post(endPoints.registration, async (req, res) => {
     const { firstName, lastName, email, password, } = req.body;
     // Check if user already exists
@@ -112,6 +106,29 @@ app.post(endPoints.login, async (req, res) => {
     res.status(200).json({ message: 'Logged in successfully', token });
     return console.log('Соединение закрыто')
 })
+
+
+app.get(endPoints.me, (req, res) => {
+    const token = req.headers.authorization;
+
+    if (!token) {
+        return res.status(401).json({ message: 'Unauthorized in token' });
+    }
+
+    try {
+        const decodedToken = jwt.verify(token, 'secret');
+        const email = decodedToken.email;
+
+        const user = users.find((user) => user.email === email);
+        if (!user) {
+            return res.status(401).json({ message: 'Unauthorized in user' });
+        }
+
+        res.status(200).json({ email });
+    } catch (error) {
+        return res.status(401).json({ message: 'Unauthorized in catch' });
+    }
+});
 
 
 app.listen(PORT, () => {

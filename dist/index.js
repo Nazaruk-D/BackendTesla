@@ -62,10 +62,6 @@ app.get(endPoints.startPage, (req, res) => {
     res.json({ message: "hi from Express App" });
     return console.log('Соединение закрыто');
 });
-app.get(endPoints.me, (req, res) => {
-    res.status(200).json({ message: "response me request" });
-    return console.log('Соединение закрыто');
-});
 app.post(endPoints.registration, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { firstName, lastName, email, password, } = req.body;
     // Check if user already exists
@@ -100,6 +96,24 @@ app.post(endPoints.login, (req, res) => __awaiter(void 0, void 0, void 0, functi
     res.status(200).json({ message: 'Logged in successfully', token });
     return console.log('Соединение закрыто');
 }));
+app.get(endPoints.me, (req, res) => {
+    const token = req.headers.authorization;
+    if (!token) {
+        return res.status(401).json({ message: 'Unauthorized in token' });
+    }
+    try {
+        const decodedToken = jwt.verify(token, 'secret');
+        const email = decodedToken.email;
+        const user = users.find((user) => user.email === email);
+        if (!user) {
+            return res.status(401).json({ message: 'Unauthorized in user' });
+        }
+        res.status(200).json({ email });
+    }
+    catch (error) {
+        return res.status(401).json({ message: 'Unauthorized in catch' });
+    }
+});
 app.listen(PORT, () => {
     console.log(`I started listening port: ${PORT}`);
 });
