@@ -54,6 +54,12 @@ app.get(endPoints.me, (req, res) => {
     res.status(200).json({ message: "response me request" });
     return console.log('Соединение закрыто');
 });
+app.post(endPoints.registration, (req, res) => {
+    let newUserData = req.body;
+    console.log(newUserData);
+    res.status(201).json(newUserData);
+    return console.log('Соединение закрыто');
+});
 app.post(endPoints.login, (req, res) => {
     res.status(200).json({ message: JSON.stringify(req.body) });
     return console.log('Соединение закрыто');
