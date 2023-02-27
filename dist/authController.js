@@ -48,18 +48,14 @@ class authController {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const { email, password } = req.body;
-                // Check if user exists
                 const user = users.find((user) => user.email === email);
                 if (!user) {
                     return res.status(401).json({ message: 'Invalid credentials' });
                 }
-                // Check if password is correct
                 const passwordMatch = yield bcrypt.compare(password, user.password);
                 if (!passwordMatch) {
                     return res.status(401).json({ message: 'Invalid credentials' });
                 }
-                // Generate JWT token
-                // const token = jwt.sign({ email }, 'secret', {expiresIn: "24h"});
                 const token = jwt.sign({ email }, 'secret');
                 res.cookie('token', token);
                 res.status(200).json({ message: 'Logged in successfully', token });
@@ -84,11 +80,11 @@ class authController {
     }
     me(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
-            const token = req.cookies.token;
-            if (!token) {
-                return res.status(401).json({ message: 'Unauthorized in token', token });
-            }
             try {
+                const token = req.cookies.token;
+                if (!token) {
+                    return res.status(401).json({ message: 'Unauthorized in token', token });
+                }
                 const decodedToken = jwt.verify(token, 'secret');
                 const email = decodedToken.email;
                 const user = users.find((user) => user.email === email);
