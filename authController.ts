@@ -54,7 +54,8 @@ class authController {
                 return res.status(401).json({message: 'Invalid credentials'});
             }
             const token = jwt.sign({email}, 'secret');
-            res.cookie('token', token)
+            // res.cookie('token', token)
+            res.cookie('token', token, { httpOnly: true, domain: process.env.NODE_ENV === 'development' ? '.localhost' : '.domain.com' })
             res.status(200).json({message: 'Logged in successfully', token});
             return console.log('Соединение закрыто')
         } catch (e) {
