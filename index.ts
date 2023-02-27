@@ -33,7 +33,6 @@ const corsOptions = {
     credentials: true,
     optionSuccessStatus: 200
 }
-
 const jsonBodyMiddleWare = express.json()
 
 app.use(jsonBodyMiddleWare)
