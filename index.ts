@@ -5,6 +5,7 @@ const jwt = require('jsonwebtoken');
 const cors = require('cors')
 const mysql = require('mysql')
 const app = express()
+const cookieParser = require('cookie-parser')
 const PORT = process.env.PORT || 7542;
 
 const endPoints = {
@@ -56,6 +57,7 @@ const corsOptions = {
     optionSuccessStatus: 200
 }
 app.use(cors(corsOptions));
+app.use(cookieParser('secret key'))
 
 const jsonBodyMiddleWare = express.json()
 app.use(jsonBodyMiddleWare)
@@ -101,18 +103,20 @@ app.post(endPoints.login, async (req, res) => {
     }
 
     // Generate JWT token
+    // const token = jwt.sign({ email }, 'secret', {expiresIn: "24h"});
     const token = jwt.sign({ email }, 'secret');
-
+    res.cookie('token', token)
     res.status(200).json({ message: 'Logged in successfully', token });
     return console.log('Соединение закрыто')
 })
 
 
 app.get(endPoints.me, (req, res) => {
-    const token = req.headers.authorization;
+    // const token = req.headers.authorization;
+    const token = req.cookies.token;
 
     if (!token) {
-        return res.status(401).json({ message: 'Unauthorized in token' });
+        return res.status(401).json({ message: 'Unauthorized in token', token });
     }
 
     try {

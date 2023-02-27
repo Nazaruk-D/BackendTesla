@@ -19,6 +19,7 @@ const jwt = require('jsonwebtoken');
 const cors = require('cors');
 const mysql = require('mysql');
 const app = (0, express_1.default)();
+const cookieParser = require('cookie-parser');
 const PORT = process.env.PORT || 7542;
 const endPoints = {
     startPage: '/',
@@ -56,6 +57,7 @@ const corsOptions = {
     optionSuccessStatus: 200
 };
 app.use(cors(corsOptions));
+app.use(cookieParser('secret key'));
 const jsonBodyMiddleWare = express_1.default.json();
 app.use(jsonBodyMiddleWare);
 app.get(endPoints.startPage, (req, res) => {
@@ -92,14 +94,17 @@ app.post(endPoints.login, (req, res) => __awaiter(void 0, void 0, void 0, functi
         return res.status(401).json({ message: 'Invalid credentials' });
     }
     // Generate JWT token
+    // const token = jwt.sign({ email }, 'secret', {expiresIn: "24h"});
     const token = jwt.sign({ email }, 'secret');
+    res.cookie('token', token);
     res.status(200).json({ message: 'Logged in successfully', token });
     return console.log('Соединение закрыто');
 }));
 app.get(endPoints.me, (req, res) => {
-    const token = req.headers.authorization;
+    // const token = req.headers.authorization;
+    const token = req.cookies.token;
     if (!token) {
-        return res.status(401).json({ message: 'Unauthorized in token' });
+        return res.status(401).json({ message: 'Unauthorized in token', token });
     }
     try {
         const decodedToken = jwt.verify(token, 'secret');
