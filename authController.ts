@@ -55,7 +55,8 @@ class authController {
             }
             const token = jwt.sign({email}, 'secret');
             // res.cookie('token', token)
-            res.cookie('token', token, { httpOnly: true, domain: process.env.NODE_ENV === 'development' ? '.localhost' : '.vercel.app' })
+            // res.cookie('token', token, { httpOnly: true, domain: process.env.NODE_ENV === 'development' ? '.localhost' : '.domain.com' })
+            res.cookie('token', token, { httpOnly: true })
             res.status(200).json({message: 'Logged in successfully', token});
             return console.log('Соединение закрыто')
         } catch (e) {
