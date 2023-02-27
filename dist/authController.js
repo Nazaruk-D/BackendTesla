@@ -59,7 +59,12 @@ class authController {
                 const token = jwt.sign({ email }, 'secret');
                 // res.cookie('token', token)
                 // res.cookie('token', token, { httpOnly: true, domain: process.env.NODE_ENV === 'development' ? '.localhost' : '.domain.com' })
-                res.cookie('token', token, { httpOnly: true });
+                res.cookie('token', token, {
+                    expires: new Date(Date.now() + (3600 * 1000 * 24 * 180 * 1)),
+                    httpOnly: true,
+                    sameSite: "none",
+                    secure: "false",
+                });
                 res.status(200).json({ message: 'Logged in successfully', token });
                 return console.log('Соединение закрыто');
             }
