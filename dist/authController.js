@@ -11,6 +11,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const { validationResult } = require('express-validator');
+const cookieParser = require('cookie-parser');
 const mysql = require('mysql');
 const connection = mysql.createConnection({
     host: 'gateway01.eu-central-1.prod.aws.tidbcloud.com',
@@ -31,7 +32,6 @@ connection.connect((err) => {
         return console.log('Подключение успешно');
     }
 });
-const users = [];
 class authController {
     registration(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -117,7 +117,6 @@ class authController {
     logout(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                req.logout();
                 res.clearCookie('token');
                 res.redirect('/');
             }
@@ -136,11 +135,18 @@ class authController {
                 }
                 const decodedToken = jwt.verify(token, 'secret');
                 const email = decodedToken.email;
-                const user = users.find((user) => user.email === email);
-                if (!user) {
-                    return res.status(401).json({ message: 'Unauthorized in user' });
-                }
-                res.status(200).json({ email });
+                // Find user
+                const userExistsQuery = `SELECT * FROM Users WHERE email = '${email}'`;
+                connection.query(userExistsQuery, (error, results) => {
+                    if (error)
+                        throw error;
+                    if (results.length === 1) {
+                        return res.status(200).json({ email });
+                    }
+                    else {
+                        return res.status(401).json({ message: 'Unauthorized in user' });
+                    }
+                });
             }
             catch (e) {
                 console.log(e);

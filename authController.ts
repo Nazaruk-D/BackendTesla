@@ -1,6 +1,7 @@
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const {validationResult} = require('express-validator')
+const cookieParser = require('cookie-parser');
 const mysql = require('mysql')
 
 const connection = mysql.createConnection({
@@ -21,16 +22,6 @@ connection.connect((err: any) => {
         return console.log('Подключение успешно')
     }
 })
-
-// Mock user database
-type UsersType = {
-    userId: string
-    email: string
-    firstName: string
-    lastName: string
-    password: string
-}
-const users: UsersType[] = [];
 
 class authController {
     async registration(req: any, res: any) {
@@ -118,7 +109,6 @@ class authController {
 
     async logout(req: any, res: any) {
         try {
-            req.logout();
             res.clearCookie('token')
             res.redirect('/');
         } catch (e) {
@@ -135,11 +125,16 @@ class authController {
             }
             const decodedToken = jwt.verify(token, 'secret');
             const email = decodedToken.email;
-            const user = users.find((user) => user.email === email);
-            if (!user) {
-                return res.status(401).json({message: 'Unauthorized in user'});
-            }
-            res.status(200).json({email});
+            // Find user
+            const userExistsQuery = `SELECT * FROM Users WHERE email = '${email}'`;
+            connection.query(userExistsQuery, (error: any, results: any) => {
+                if (error) throw error;
+                if (results.length === 1) {
+                    return res.status(200).json({email});
+                } else {
+                    return res.status(401).json({message: 'Unauthorized in user'});
+                }
+            });
         } catch (e) {
             console.log(e)
             res.status(400).json({message: 'Me error'})
