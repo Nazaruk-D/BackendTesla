@@ -10,13 +10,6 @@ const app = (0, express_1.default)();
 const cookieParser = require('cookie-parser');
 const authRouter = require('./authRouter');
 const PORT = process.env.PORT || 7542;
-// const endPoints = {
-//     startPage: '/',
-//     me: '/auth/me',
-//     registration: '/auth/register',
-//     login: '/auth/login',
-//     logout: '/auth/me'
-// }
 const connection = mysql.createConnection({
     host: 'gateway01.eu-central-1.prod.aws.tidbcloud.com',
     port: 4000,

@@ -12,11 +12,16 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const uuid_1 = require("uuid");
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+const { validationResult } = require('express-validator');
 const users = [];
 class authController {
     registration(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
+                const errors = validationResult(req);
+                if (!errors.isEmpty()) {
+                    return res.status(400).json({ message: "Ошибка при регистрации", errors });
+                }
                 const { firstName, lastName, email, password, } = req.body;
                 // Check if user already exists
                 const userExists = users.find((user) => user.email === email);

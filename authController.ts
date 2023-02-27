@@ -1,6 +1,8 @@
 import {v1} from "uuid";
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+const {validationResult} = require('express-validator')
+
 
 // Mock user database
 type UsersType = {
@@ -10,12 +12,15 @@ type UsersType = {
     lastName: string
     password: string
 }
-
 const users: UsersType[] = [];
 
 class authController {
     async registration(req: any, res: any) {
         try {
+            const errors = validationResult(req)
+            if(!errors.isEmpty()) {
+                return res.status(400).json({message: "Ошибка при регистрации", errors})
+            }
             const {firstName, lastName, email, password,} = req.body;
             // Check if user already exists
             const userExists = users.find((user) => user.email === email);
