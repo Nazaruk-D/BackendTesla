@@ -5,30 +5,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const cors = require('cors');
-const mysql = require('mysql');
 const app = (0, express_1.default)();
 const cookieParser = require('cookie-parser');
 const authRouter = require('./authRouter');
 const PORT = process.env.PORT || 7542;
-const connection = mysql.createConnection({
-    host: 'gateway01.eu-central-1.prod.aws.tidbcloud.com',
-    port: 4000,
-    user: '479ukXTghZsCFgw.root',
-    password: '2kcSGnAulyiZ0Jj2',
-    database: 'test',
-    ssl: {
-        minVersion: 'TLSv1.2',
-        rejectUnauthorized: true
-    }
-});
-connection.connect((err) => {
-    if (err) {
-        return console.log(JSON.stringify(err));
-    }
-    else {
-        return console.log('Подключение успешно');
-    }
-});
 const corsOptions = {
     origin: (origin, callback) => {
         console.log("origin: ", origin);

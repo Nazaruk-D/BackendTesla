@@ -8,11 +8,29 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-Object.defineProperty(exports, "__esModule", { value: true });
-const uuid_1 = require("uuid");
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const { validationResult } = require('express-validator');
+const mysql = require('mysql');
+const connection = mysql.createConnection({
+    host: 'gateway01.eu-central-1.prod.aws.tidbcloud.com',
+    port: 4000,
+    user: '479ukXTghZsCFgw.root',
+    password: '2kcSGnAulyiZ0Jj2',
+    database: 'carshop',
+    ssl: {
+        minVersion: 'TLSv1.2',
+        rejectUnauthorized: true
+    }
+});
+connection.connect((err) => {
+    if (err) {
+        return console.log(JSON.stringify(err));
+    }
+    else {
+        return console.log('Подключение успешно');
+    }
+});
 const users = [];
 class authController {
     registration(req, res) {
@@ -22,20 +40,30 @@ class authController {
                 if (!errors.isEmpty()) {
                     return res.status(400).json({ message: "Ошибка при регистрации", errors });
                 }
-                const { firstName, lastName, email, password, } = req.body;
-                // Check if user already exists
-                const userExists = users.find((user) => user.email === email);
-                if (userExists) {
-                    return res.status(409).json({ message: 'User already exists' });
-                }
+                // Data destructuring
+                const { firstName, lastName, email, password } = req.body;
                 // Hash the password
                 const salt = yield bcrypt.genSalt(10);
                 const hashedPassword = yield bcrypt.hash(password, salt);
-                const userId = (0, uuid_1.v1)();
-                // Save the user to the database
-                const user = { userId, firstName, lastName, email, password: hashedPassword };
-                users.push(user);
-                res.status(201).json({ message: 'User registered successfully' });
+                // Create queries
+                const userExistsQuery = `SELECT * FROM Users WHERE email = '${email}'`;
+                const userRegisterQuery = `INSERT INTO Users (email, first_name, last_name, avatar_url, role, password_hash) VALUES ('${email}', '${firstName}', '${lastName}', '', 'user', '${hashedPassword}')`;
+                // Check if user already exists
+                connection.query(userExistsQuery, (error, results) => {
+                    if (error)
+                        throw error;
+                    if (results.length === 1) {
+                        return res.status(409).json({ message: 'User already exists' });
+                    }
+                    else
+                        (
+                        // Save the user to the database
+                        connection.query(userRegisterQuery, (error, results) => {
+                            if (error)
+                                throw error;
+                            res.status(201).json({ message: 'User registered successfully' });
+                        }));
+                });
                 return console.log('Соединение закрыто');
             }
             catch (e) {
@@ -48,24 +76,36 @@ class authController {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const { email, password } = req.body;
-                const user = users.find((user) => user.email === email);
-                if (!user) {
-                    return res.status(401).json({ message: 'Invalid credentials' });
-                }
-                const passwordMatch = yield bcrypt.compare(password, user.password);
-                if (!passwordMatch) {
-                    return res.status(401).json({ message: 'Invalid credentials' });
-                }
                 const token = jwt.sign({ email }, 'secret');
-                // res.cookie('token', token)
-                // res.cookie('token', token, { httpOnly: true, domain: process.env.NODE_ENV === 'development' ? '.localhost' : '.domain.com' })
-                res.cookie('token', token, {
-                    expires: new Date(Date.now() + (3600 * 1000 * 24 * 180 * 1)),
-                    httpOnly: true,
-                    sameSite: "none",
-                    secure: "false",
+                // Create queries
+                const query = `SELECT * FROM Users WHERE email = '${email}'`;
+                // Check if user already exists
+                connection.query(query, (error, results) => {
+                    if (error)
+                        throw error;
+                    if (results.length === 1) {
+                        const user = results[0];
+                        bcrypt.compare(password, user.password_hash, (error, match) => {
+                            if (error)
+                                throw error;
+                            if (match) {
+                                res.cookie('token', token, {
+                                    expires: new Date(Date.now() + (3600 * 1000 * 24 * 180 * 1)),
+                                    httpOnly: true,
+                                    sameSite: "none",
+                                    secure: "false",
+                                });
+                                res.status(200).json({ message: 'Login successful' });
+                            }
+                            else {
+                                return res.status(401).json({ message: 'Incorrect email or password' });
+                            }
+                        });
+                    }
+                    else {
+                        return res.status(401).json({ message: 'Incorrect email or password' });
+                    }
                 });
-                res.status(200).json({ message: 'Logged in successfully', token });
                 return console.log('Соединение закрыто');
             }
             catch (e) {
@@ -77,7 +117,9 @@ class authController {
     logout(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                res.json("server work");
+                req.logout();
+                res.clearCookie('token');
+                res.redirect('/');
             }
             catch (e) {
                 console.log(e);
