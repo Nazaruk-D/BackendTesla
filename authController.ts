@@ -70,7 +70,7 @@ class authController {
                                 httpOnly: true,
                                 sameSite: "none",
                                 secure: "true",
-                                domain: "localhost"
+                                // domain: "localhost"
                             })
                             res.status(200).json({message: 'Login successful'});
                         } else {
