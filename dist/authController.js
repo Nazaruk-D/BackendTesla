@@ -31,15 +31,6 @@ connection.connect((err) => {
         return console.log('Подключение успешно');
     }
 });
-// // Mock user database
-// type UsersType = {
-//     userId: string
-//     email: string
-//     firstName: string
-//     lastName: string
-//     password: string
-// }
-// const users: UsersType[] = [];
 class authController {
     registration(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -91,9 +82,9 @@ class authController {
                             if (match) {
                                 res.cookie('token', token, {
                                     expires: new Date(Date.now() + (3600 * 1000 * 24 * 180 * 1)),
+                                    sameSite: 'none',
+                                    secure: "true",
                                     httpOnly: true,
-                                    sameSite: "none",
-                                    secure: "false",
                                 });
                                 res.status(200).json({ message: 'Login successful' });
                             }
@@ -117,7 +108,12 @@ class authController {
     logout(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                res.clearCookie('token');
+                res.cookie('token', "", {
+                    expires: new Date(0),
+                    sameSite: 'none',
+                    secure: "true",
+                    httpOnly: true,
+                });
                 res.status(200).json({ message: 'Logout successful' });
             }
             catch (e) {
