@@ -31,15 +31,6 @@ connection.connect((err) => {
         return console.log('Подключение успешно');
     }
 });
-// // Mock user database
-// type UsersType = {
-//     userId: string
-//     email: string
-//     firstName: string
-//     lastName: string
-//     password: string
-// }
-// const users: UsersType[] = [];
 class authController {
     registration(req, res) {
         return __awaiter(this, void 0, void 0, function* () {

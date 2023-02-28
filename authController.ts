@@ -23,16 +23,6 @@ connection.connect((err: any) => {
     }
 })
 
-// // Mock user database
-// type UsersType = {
-//     userId: string
-//     email: string
-//     firstName: string
-//     lastName: string
-//     password: string
-// }
-// const users: UsersType[] = [];
-
 class authController {
     async registration(req: any, res: any) {
         try {
