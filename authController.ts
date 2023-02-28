@@ -89,7 +89,12 @@ class authController {
 
     async logout(req: any, res: any) {
         try {
-            res.clearCookie('token')
+            res.cookie('token', "", {
+                expires: new Date(0),
+                sameSite: 'none',
+                secure: "true",
+                httpOnly: true,
+            })
             res.status(200).json({message: 'Logout successful'});
         } catch (e) {
             console.log(e)

@@ -108,7 +108,12 @@ class authController {
     logout(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                res.clearCookie('token');
+                res.cookie('token', "", {
+                    expires: new Date(0),
+                    sameSite: 'none',
+                    secure: "true",
+                    httpOnly: true,
+                });
                 res.status(200).json({ message: 'Logout successful' });
             }
             catch (e) {
