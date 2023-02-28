@@ -118,7 +118,7 @@ class authController {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 res.clearCookie('token');
-                res.redirect('/');
+                res.status(200).json({ message: 'Logout successful' });
             }
             catch (e) {
                 console.log(e);

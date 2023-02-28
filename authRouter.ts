@@ -21,6 +21,6 @@ router.post(endPoints.registration, [
   check("email", "Email пользователя не может быть пустым").notEmpty(),
   check("password", "Пароль должен быть больше 3х символов").isLength({min: 3}),
 ], controller.registration)
-router.post(endPoints.logout, controller.logout)
+router.delete(endPoints.logout, controller.logout)
 
 module.exports = router
