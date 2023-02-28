@@ -68,9 +68,8 @@ class authController {
                             res.cookie('token', token, {
                                 expires: new Date(Date.now() + (3600 * 1000 * 24 * 180 * 1)),
                                 httpOnly: true,
-                                sameSite: "none",
+                                SameSite: "none",
                                 secure: "true",
-                                // domain: "localhost"
                             })
                             res.status(200).json({message: 'Login successful'});
                         } else {
