@@ -11,7 +11,6 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const { validationResult } = require('express-validator');
-const cookieParser = require('cookie-parser');
 const mysql = require('mysql');
 const connection = mysql.createConnection({
     host: 'gateway01.eu-central-1.prod.aws.tidbcloud.com',
@@ -32,6 +31,15 @@ connection.connect((err) => {
         return console.log('Подключение успешно');
     }
 });
+// // Mock user database
+// type UsersType = {
+//     userId: string
+//     email: string
+//     firstName: string
+//     lastName: string
+//     password: string
+// }
+// const users: UsersType[] = [];
 class authController {
     registration(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -40,15 +48,11 @@ class authController {
                 if (!errors.isEmpty()) {
                     return res.status(400).json({ message: "Ошибка при регистрации", errors });
                 }
-                // Data destructuring
                 const { firstName, lastName, email, password } = req.body;
-                // Hash the password
                 const salt = yield bcrypt.genSalt(10);
                 const hashedPassword = yield bcrypt.hash(password, salt);
-                // Create queries
                 const userExistsQuery = `SELECT * FROM Users WHERE email = '${email}'`;
                 const userRegisterQuery = `INSERT INTO Users (email, first_name, last_name, avatar_url, role, password_hash) VALUES ('${email}', '${firstName}', '${lastName}', '', 'user', '${hashedPassword}')`;
-                // Check if user already exists
                 connection.query(userExistsQuery, (error, results) => {
                     if (error)
                         throw error;
@@ -56,9 +60,7 @@ class authController {
                         return res.status(409).json({ message: 'User already exists' });
                     }
                     else
-                        (
-                        // Save the user to the database
-                        connection.query(userRegisterQuery, (error, results) => {
+                        (connection.query(userRegisterQuery, (error, results) => {
                             if (error)
                                 throw error;
                             res.status(201).json({ message: 'User registered successfully' });
@@ -77,9 +79,7 @@ class authController {
             try {
                 const { email, password } = req.body;
                 const token = jwt.sign({ email }, 'secret');
-                // Create queries
                 const query = `SELECT * FROM Users WHERE email = '${email}'`;
-                // Check if user already exists
                 connection.query(query, (error, results) => {
                     if (error)
                         throw error;

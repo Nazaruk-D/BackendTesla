@@ -21,7 +21,6 @@ app.use(cookieParser('secret key'))
 app.use('/auth', authRouter);
 
 
-
 app.get("/", (req, res) => {
     res.json({message: "hi from Express App"})
     return console.log('Соединение закрыто')
