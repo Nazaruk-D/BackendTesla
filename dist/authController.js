@@ -84,7 +84,7 @@ class authController {
                                     expires: new Date(Date.now() + (3600 * 1000 * 24 * 180 * 1)),
                                     httpOnly: true,
                                     sameSite: "none",
-                                    secure: "false",
+                                    secure: "true",
                                     domain: "localhost"
                                 });
                                 res.status(200).json({ message: 'Login successful' });
