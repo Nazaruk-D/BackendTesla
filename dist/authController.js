@@ -85,6 +85,7 @@ class authController {
                                     httpOnly: true,
                                     sameSite: "none",
                                     secure: "false",
+                                    domain: "localhost"
                                 });
                                 res.status(200).json({ message: 'Login successful' });
                             }
