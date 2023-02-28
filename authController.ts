@@ -62,6 +62,16 @@ class authController {
                 if (error) throw error;
                 if (results.length === 1) {
                     const user = results[0];
+                    const userData = {
+                        id: user.id,
+                        email: user.email,
+                        firstName: user.first_name,
+                        lastName: user.last_name,
+                        avatar: user.avatar_url,
+                        role: user.role,
+                        createdAt: user.created_at,
+                        updatedAt: user.updated_at
+                    };
                     bcrypt.compare(password, user.password_hash, (error: any, match: any) => {
                         if (error) throw error;
                         if (match) {
@@ -71,7 +81,7 @@ class authController {
                                 secure: "true",
                                 httpOnly: true,
                             })
-                            res.status(200).json({message: 'Login successful'});
+                            res.status(200).json({message: 'Login successful', user: userData});
                         } else {
                             return res.status(401).json({message: 'Incorrect email or password'});
                         }
@@ -115,7 +125,18 @@ class authController {
             connection.query(userExistsQuery, (error: any, results: any) => {
                 if (error) throw error;
                 if (results.length === 1) {
-                    return res.status(200).json({email});
+                    const user = results[0];
+                    const userData = {
+                        id: user.id,
+                        email: user.email,
+                        firstName: user.first_name,
+                        lastName: user.last_name,
+                        avatar: user.avatar_url,
+                        role: user.role,
+                        createdAt: user.created_at,
+                        updatedAt: user.updated_at
+                    };
+                    return res.status(200).json({email: email, user: userData});
                 } else {
                     return res.status(401).json({message: 'Unauthorized in user'});
                 }
