@@ -82,9 +82,9 @@ class authController {
                             if (match) {
                                 res.cookie('token', token, {
                                     expires: new Date(Date.now() + (3600 * 1000 * 24 * 180 * 1)),
-                                    httpOnly: true,
-                                    SameSite: "None",
+                                    sameSite: 'none',
                                     secure: "true",
+                                    httpOnly: true,
                                 });
                                 res.status(200).json({ message: 'Login successful' });
                             }
