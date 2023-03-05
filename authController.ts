@@ -1,27 +1,8 @@
+import {connection} from "./index";
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const {validationResult} = require('express-validator')
-const mysql = require('mysql')
 
-const connection = mysql.createConnection({
-    host: 'gateway01.eu-central-1.prod.aws.tidbcloud.com',
-    port: 4000,
-    user: '479ukXTghZsCFgw.root',
-    password: '2kcSGnAulyiZ0Jj2',
-    database: 'carshop',
-    ssl: {
-        minVersion: 'TLSv1.2',
-        rejectUnauthorized: true
-    }
-});
-
-connection.connect((err: any) => {
-    if (err) {
-        return console.log(JSON.stringify(err))
-    } else {
-        return console.log('Подключение успешно')
-    }
-})
 
 class authController {
     async registration(req: any, res: any) {

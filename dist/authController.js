@@ -8,29 +8,11 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+Object.defineProperty(exports, "__esModule", { value: true });
+const index_1 = require("./index");
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const { validationResult } = require('express-validator');
-const mysql = require('mysql');
-const connection = mysql.createConnection({
-    host: 'gateway01.eu-central-1.prod.aws.tidbcloud.com',
-    port: 4000,
-    user: '479ukXTghZsCFgw.root',
-    password: '2kcSGnAulyiZ0Jj2',
-    database: 'carshop',
-    ssl: {
-        minVersion: 'TLSv1.2',
-        rejectUnauthorized: true
-    }
-});
-connection.connect((err) => {
-    if (err) {
-        return console.log(JSON.stringify(err));
-    }
-    else {
-        return console.log('Подключение успешно');
-    }
-});
 class authController {
     registration(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -44,14 +26,14 @@ class authController {
                 const hashedPassword = yield bcrypt.hash(password, salt);
                 const userExistsQuery = `SELECT * FROM Users WHERE email = '${email}'`;
                 const userRegisterQuery = `INSERT INTO Users (email, first_name, last_name, avatar_url, role, password_hash) VALUES ('${email}', '${firstName}', '${lastName}', '', 'user', '${hashedPassword}')`;
-                connection.query(userExistsQuery, (error, results) => {
+                index_1.connection.query(userExistsQuery, (error, results) => {
                     if (error)
                         throw error;
                     if (results.length === 1) {
                         return res.status(409).json({ message: 'User already exists' });
                     }
                     else
-                        (connection.query(userRegisterQuery, (error, results) => {
+                        (index_1.connection.query(userRegisterQuery, (error, results) => {
                             if (error)
                                 throw error;
                             res.status(201).json({ message: 'User registered successfully' });
@@ -71,7 +53,7 @@ class authController {
                 const { email, password } = req.body;
                 const token = jwt.sign({ email }, 'secret');
                 const query = `SELECT * FROM Users WHERE email = '${email}'`;
-                connection.query(query, (error, results) => {
+                index_1.connection.query(query, (error, results) => {
                     if (error)
                         throw error;
                     if (results.length === 1) {
@@ -143,7 +125,7 @@ class authController {
                 const email = decodedToken.email;
                 // Find user
                 const userExistsQuery = `SELECT * FROM Users WHERE email = '${email}'`;
-                connection.query(userExistsQuery, (error, results) => {
+                index_1.connection.query(userExistsQuery, (error, results) => {
                     if (error)
                         throw error;
                     if (results.length === 1) {
