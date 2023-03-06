@@ -12,7 +12,7 @@ class profileController {
 
                 if (results.length === 1) {
                     const regionId = results[0].id;
-                    const updateUserQuery = `UPDATE Users SET first_name=${firstName}, last_name=${lastName}, email=${email}, region_id=${regionId}, phone_number=${phoneNumber} WHERE id=${id}`;
+                    const updateUserQuery = `UPDATE Users SET first_name=${firstName}, last_name=${lastName}, email=${email}, region_id=${regionId}, phone_number=${phoneNumber}, updated_at=CURRENT_TIMESTAMP WHERE id=${id}`;
 
                     connection.query(updateUserQuery, (error: any, results: any) => {
                         if (error) {
