@@ -6,6 +6,6 @@ const profileEndPoints = {
     updateUser: '/users/:id',
 }
 
-profileRouter.post(profileEndPoints.updateUser, profileController.updateUser)
+profileRouter.put(profileEndPoints.updateUser, profileController.updateUser)
 
 module.exports = profileRouter

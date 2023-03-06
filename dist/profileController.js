@@ -11,39 +11,36 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 const index_1 = require("./index");
 const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
-const { validationResult } = require('express-validator');
 class profileController {
     updateUser(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const errors = validationResult(req);
-                if (!errors.isEmpty()) {
-                    return res.status(400).json({ message: "Ошибка при регистрации", errors });
-                }
-                const { firstName, lastName, email, password } = req.body;
-                const salt = yield bcrypt.genSalt(10);
-                const hashedPassword = yield bcrypt.hash(password, salt);
-                const userExistsQuery = `SELECT * FROM Users WHERE email = '${email}'`;
-                const userRegisterQuery = `INSERT INTO Users (email, first_name, last_name, avatar_url, role, password_hash) VALUES ('${email}', '${firstName}', '${lastName}', '', 'user', '${hashedPassword}')`;
-                index_1.connection.query(userExistsQuery, (error, results) => {
+                const { id, firstName, lastName, email, region, phoneNumber } = req.body;
+                const regionIdQuery = `SELECT id FROM Regions WHERE region=${region}`;
+                index_1.connection.query(regionIdQuery, (error, results) => {
                     if (error)
                         throw error;
                     if (results.length === 1) {
-                        return res.status(409).json({ message: 'User already exists' });
+                        const regionId = results[0].id;
+                        const updateUserQuery = `UPDATE Users SET first_name=${firstName}, last_name=${lastName}, email=${email}, region_id=${regionId}, phone_number=${phoneNumber} WHERE id=${id}`;
+                        index_1.connection.query(updateUserQuery, (error, results) => {
+                            if (error) {
+                                return res.status(500).send({ error: 'Error updating user' });
+                            }
+                            else {
+                                res.send({ message: 'User updated successfully' });
+                            }
+                        });
                     }
-                    else
-                        (index_1.connection.query(userRegisterQuery, (error, results) => {
-                            if (error)
-                                throw error;
-                            res.status(201).json({ message: 'User registered successfully' });
-                        }));
+                    else {
+                        return res.status(400).json({ message: 'Region search error' });
+                    }
                 });
                 return console.log('Соединение закрыто');
             }
             catch (e) {
                 console.log(e);
-                res.status(400).json({ message: 'Registration error' });
+                res.status(400).json({ message: 'Update data error' });
             }
         });
     }
