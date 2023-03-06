@@ -5,7 +5,7 @@ const {validationResult} = require('express-validator')
 
 
 class profileController {
-    async registration(req: any, res: any) {
+    async updateUser (req: any, res: any) {
         try {
             const errors = validationResult(req)
             if (!errors.isEmpty()) {

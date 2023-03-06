@@ -124,7 +124,7 @@ class authController {
                 const decodedToken = jwt.verify(token, 'secret');
                 const email = decodedToken.email;
                 // Find user
-                const userExistsQuery = `SELECT * FROM Users WHERE email = '${email}'`;
+                const userExistsQuery = `SELECT u.*, r.region FROM Users u INNER JOIN Regions r ON u.region_id = r.id WHERE email = '${email}'`;
                 index_1.connection.query(userExistsQuery, (error, results) => {
                     if (error)
                         throw error;
@@ -135,6 +135,8 @@ class authController {
                             email: user.email,
                             firstName: user.first_name,
                             lastName: user.last_name,
+                            region: user.region,
+                            phoneNumber: user.phone_number,
                             avatar: user.avatar_url,
                             role: user.role,
                             createdAt: user.created_at,

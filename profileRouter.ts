@@ -3,9 +3,9 @@ const profileController = require('./profileController')
 const profileRouter = new RouterProfile()
 
 const profileEndPoints = {
-    registration: '/me',
+    updateUser: '/users/:id',
 }
 
-profileRouter.get(profileEndPoints.registration, profileController.registration)
+profileRouter.post(profileEndPoints.updateUser, profileController.updateUser)
 
 module.exports = profileRouter

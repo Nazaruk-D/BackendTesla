@@ -14,7 +14,7 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const { validationResult } = require('express-validator');
 class profileController {
-    registration(req, res) {
+    updateUser(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const errors = validationResult(req);
