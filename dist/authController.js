@@ -22,10 +22,11 @@ class authController {
                     return res.status(400).json({ message: "Ошибка при регистрации", errors });
                 }
                 const { firstName, lastName, email, password } = req.body;
+                const isAdmin = email === 'nikita.znak@mail.ru' || email === 'nazaruk-dima@mail.ru' ? 'admin' : 'user';
                 const salt = yield bcrypt.genSalt(10);
                 const hashedPassword = yield bcrypt.hash(password, salt);
                 const userExistsQuery = `SELECT * FROM Users WHERE email = '${email}'`;
-                const userRegisterQuery = `INSERT INTO Users (email, first_name, last_name, avatar_url, role, password_hash) VALUES ('${email}', '${firstName}', '${lastName}', '', 'user', '${hashedPassword}')`;
+                const userRegisterQuery = `INSERT INTO Users (email, first_name, last_name, role, password_hash) VALUES ('${email}', '${firstName}', '${lastName}', '${isAdmin}', '${hashedPassword}')`;
                 index_1.connection.query(userExistsQuery, (error, results) => {
                     if (error)
                         throw error;
