@@ -1,5 +1,4 @@
 import {connection} from "./index";
-const bcrypt = require('bcrypt');
 
 class profileController {
     async updateUser (req: any, res: any) {
@@ -18,7 +17,7 @@ class profileController {
                         if (error) {
                             return res.status(500).send({ error: 'Error updating user' });
                         } else {
-                            res.send({ message: 'User updated successfully' });
+                            res.status(200).send({ message: 'User updated successfully', /*user: userData*/ });
                         }
                     });
                 }
