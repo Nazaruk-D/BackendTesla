@@ -63,7 +63,7 @@ class authController {
                                 secure: "true",
                                 httpOnly: true,
                             })
-                            res.status(200).json({message: 'Login successful', user: userData});
+                            res.status(200).json({message: 'Login successful', user: userData, statusCode: 200});
                         } else {
                             return res.status(401).json({message: 'Incorrect email or password'});
                         }
@@ -87,7 +87,7 @@ class authController {
                 secure: "true",
                 httpOnly: true,
             })
-            res.status(200).json({message: 'Logout successful'});
+            res.status(200).json({message: 'Logout successful', statusCode: 200});
         } catch (e) {
             console.log(e)
             res.status(400).json({message: 'Logout error'})
