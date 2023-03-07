@@ -3,7 +3,7 @@ const profileController = require('./profileController')
 const profileRouter = new RouterProfile()
 
 const profileEndPoints = {
-    updateUser: '/users/:id',
+    updateUser: '/:id',
 }
 
 profileRouter.put(profileEndPoints.updateUser, profileController.updateUser)
