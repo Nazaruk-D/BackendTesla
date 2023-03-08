@@ -15,13 +15,13 @@ class profileController {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const { id, firstName, lastName, email, region, phoneNumber } = req.body;
-                const regionIdQuery = `SELECT id FROM Regions WHERE region=${region}`;
+                const regionIdQuery = `SELECT id FROM Regions WHERE region='${region}'`;
                 index_1.connection.query(regionIdQuery, (error, results) => {
                     if (error)
                         throw error;
                     if (results.length === 1) {
                         const regionId = results[0].id;
-                        const updateUserQuery = `UPDATE Users SET first_name=${firstName}, last_name=${lastName}, email=${email}, region_id=${regionId}, phone_number=${phoneNumber}, updated_at=CURRENT_TIMESTAMP WHERE id=${id}`;
+                        const updateUserQuery = `UPDATE Users SET first_name='${firstName}', last_name='${lastName}', email='${email}', region_id=${regionId}, phone_number=${phoneNumber}, updated_at=CURRENT_TIMESTAMP WHERE id=${id}`;
                         index_1.connection.query(updateUserQuery, (error, results) => {
                             if (error) {
                                 return res.status(500).send({ error: 'Error updating user' });

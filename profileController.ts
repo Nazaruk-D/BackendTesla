@@ -4,14 +4,14 @@ class profileController {
     async updateUser(req: any, res: any) {
         try {
             const {id, firstName, lastName, email, region, phoneNumber} = req.body;
-            const regionIdQuery = `SELECT id FROM Regions WHERE region=${region}`;
+            const regionIdQuery = `SELECT id FROM Regions WHERE region='${region}'`;
 
             connection.query(regionIdQuery, (error: any, results: any) => {
                 if (error) throw error;
 
                 if (results.length === 1) {
                     const regionId = results[0].id;
-                    const updateUserQuery = `UPDATE Users SET first_name=${firstName}, last_name=${lastName}, email=${email}, region_id=${regionId}, phone_number=${phoneNumber}, updated_at=CURRENT_TIMESTAMP WHERE id=${id}`;
+                    const updateUserQuery = `UPDATE Users SET first_name='${firstName}', last_name='${lastName}', email='${email}', region_id=${regionId}, phone_number=${phoneNumber}, updated_at=CURRENT_TIMESTAMP WHERE id=${id}`;
 
                     connection.query(updateUserQuery, (error: any, results: any) => {
                         if (error) {
@@ -35,7 +35,6 @@ class profileController {
                                         updatedAt: user.updated_at
                                     };
                                     return res.status(200).send({message: 'User updated successfully', user: userData});
-
                                 } else {
                                     return res.status(401).json({message: 'Unauthorized in user'});
                                 }
