@@ -10,6 +10,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const index_1 = require("./index");
+const bcrypt = require('bcrypt');
 class profileController {
     updateUser(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -56,6 +57,29 @@ class profileController {
                     }
                     else {
                         return res.status(400).json({ message: 'Region search error' });
+                    }
+                });
+                return console.log('Соединение закрыто');
+            }
+            catch (e) {
+                console.log(e);
+                res.status(400).json({ message: 'Update data error' });
+            }
+        });
+    }
+    resetPassword(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const { id, password } = req.body;
+                const salt = yield bcrypt.genSalt(10);
+                const hashedPassword = yield bcrypt.hash(password, salt);
+                const updateUserPasswordQuery = `UPDATE Users SET password_hash='${hashedPassword}', updated_at=CURRENT_TIMESTAMP WHERE id=${id}`;
+                index_1.connection.query(updateUserPasswordQuery, (error, results) => {
+                    if (error) {
+                        return res.status(500).json({ message: 'Error updating user password' });
+                    }
+                    else {
+                        return res.status(200).send({ message: 'User password updated successfully' });
                     }
                 });
                 return console.log('Соединение закрыто');
