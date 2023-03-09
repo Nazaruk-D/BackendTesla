@@ -9,7 +9,7 @@ class authController {
         try {
             const errors = validationResult(req)
             if (!errors.isEmpty()) {
-                return res.status(400).json({message: "Ошибка при регистрации", errors})
+                return res.status(400).json({message: "Registration error", errors, statusCode: 400})
             }
             const {firstName, lastName, email, password} = req.body;
             const isAdmin = email === 'nikita.znak@mail.ru' || email === 'nazaruk-dima@mail.ru' ? 'admin' : 'user';
@@ -20,18 +20,18 @@ class authController {
             connection.query(userExistsQuery, (error: any, results: any) => {
                 if (error) throw error;
                 if (results.length === 1) {
-                    return res.status(409).json({message: 'User already exists'});
+                    return res.status(409).json({message: 'User already exists', statusCode: 409});
                 } else (
                     connection.query(userRegisterQuery, (error: any, results: any) => {
                         if (error) throw error;
-                        res.status(201).json({message: 'User registered successfully'});
+                        res.status(201).json({message: 'User registered successfully', statusCode: 201});
                     })
                 )
             });
             return console.log('Соединение закрыто')
         } catch (e) {
             console.log(e)
-            res.status(400).json({message: 'Registration error'})
+            res.status(400).json({message: 'Registration error', statusCode: 400})
         }
     }
 
@@ -65,17 +65,17 @@ class authController {
                             })
                             res.status(200).json({message: 'Login successful', user: userData, statusCode: 200});
                         } else {
-                            return res.status(401).json({message: 'Incorrect email or password'});
+                            return res.status(401).json({message: 'Incorrect email or password', statusCode: 401});
                         }
                     });
                 } else {
-                    return res.status(401).json({message: 'Incorrect email or password'});
+                    return res.status(401).json({message: 'Incorrect email or password', statusCode: 401});
                 }
             });
             return console.log('Соединение закрыто')
         } catch (e) {
             console.log(e)
-            res.status(400).json({message: 'Login error'})
+            res.status(400).json({message: 'Login error', statusCode: 400})
         }
     }
 
@@ -90,7 +90,7 @@ class authController {
             res.status(200).json({message: 'Logout successful', statusCode: 200});
         } catch (e) {
             console.log(e)
-            res.status(400).json({message: 'Logout error'})
+            res.status(400).json({message: 'Logout error', statusCode: 400})
         }
     }
 
@@ -98,7 +98,7 @@ class authController {
         try {
             const token = req.cookies.token;
             if (!token) {
-                return res.status(401).json({message: 'Unauthorized in token', token});
+                return res.status(401).json({message: 'Unauthorized in token', token, statusCode: 401});
             }
             const decodedToken = jwt.verify(token, 'secret');
             const email = decodedToken.email;
@@ -120,14 +120,14 @@ class authController {
                         createdAt: user.created_at,
                         updatedAt: user.updated_at
                     };
-                    return res.status(200).json({email: email, user: userData});
+                    return res.status(200).json({email: email, user: userData, statusCode: 200});
                 } else {
-                    return res.status(401).json({message: 'Unauthorized in user'});
+                    return res.status(401).json({message: 'Unauthorized in user', statusCode: 401});
                 }
             });
         } catch (e) {
             console.log(e)
-            res.status(400).json({message: 'Me error'})
+            res.status(400).json({message: 'Me error', statusCode: 400})
         }
     }
 

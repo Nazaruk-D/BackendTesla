@@ -16,7 +16,7 @@ class profileController {
 
                     connection.query(updateUserQuery, (error: any, results: any) => {
                         if (error) {
-                            return res.status(500).send({error: 'Error updating user'});
+                            return res.status(500).send({error: 'Error updating user', statusCode: 500});
                         } else {
                             const getUserQuery = `SELECT u.*, r.region FROM Users u INNER JOIN Regions r ON u.region_id = r.id WHERE email = '${email}'`;
                             connection.query(getUserQuery, (error: any, results: any) => {
@@ -35,21 +35,21 @@ class profileController {
                                         createdAt: user.created_at,
                                         updatedAt: user.updated_at
                                     };
-                                    return res.status(200).send({message: 'User updated successfully', user: userData});
+                                    return res.status(200).send({message: 'User updated successfully', user: userData, statusCode: 200});
                                 } else {
-                                    return res.status(401).json({message: 'Unauthorized in user'});
+                                    return res.status(401).json({message: 'Unauthorized in user', statusCode: 401});
                                 }
                             });
                         }
                     });
                 } else {
-                    return res.status(400).json({message: 'Region search error'})
+                    return res.status(400).json({message: 'Region search error', statusCode: 400})
                 }
             })
             return console.log('Соединение закрыто')
         } catch (e) {
             console.log(e)
-            res.status(400).json({message: 'Update data error'})
+            res.status(400).json({message: 'Update data error', statusCode: 400})
         }
     }
     async resetPassword(req: any, res: any) {
@@ -70,7 +70,7 @@ class profileController {
             return console.log('Соединение закрыто')
         } catch (e) {
             console.log(e)
-            res.status(400).json({message: 'Update data error'})
+            res.status(400).json({message: 'Update data error', statusCode: 400})
         }
     }
 }
