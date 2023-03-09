@@ -25,7 +25,7 @@ class profileController {
                         const updateUserQuery = `UPDATE Users SET first_name='${firstName}', last_name='${lastName}', email='${email}', region_id=${regionId}, phone_number=${phoneNumber}, updated_at=CURRENT_TIMESTAMP WHERE id=${id}`;
                         index_1.connection.query(updateUserQuery, (error, results) => {
                             if (error) {
-                                return res.status(500).send({ error: 'Error updating user' });
+                                return res.status(500).send({ error: 'Error updating user', statusCode: 500 });
                             }
                             else {
                                 const getUserQuery = `SELECT u.*, r.region FROM Users u INNER JOIN Regions r ON u.region_id = r.id WHERE email = '${email}'`;
@@ -43,27 +43,28 @@ class profileController {
                                             phoneNumber: user.phone_number,
                                             avatar: user.avatar_url,
                                             role: user.role,
+                                            isRegistered: user.is_registered,
                                             createdAt: user.created_at,
                                             updatedAt: user.updated_at
                                         };
-                                        return res.status(200).send({ message: 'User updated successfully', user: userData });
+                                        return res.status(200).send({ message: 'User updated successfully', user: userData, statusCode: 200 });
                                     }
                                     else {
-                                        return res.status(401).json({ message: 'Unauthorized in user' });
+                                        return res.status(401).json({ message: 'Unauthorized in user', statusCode: 401 });
                                     }
                                 });
                             }
                         });
                     }
                     else {
-                        return res.status(400).json({ message: 'Region search error' });
+                        return res.status(400).json({ message: 'Region search error', statusCode: 400 });
                     }
                 });
                 return console.log('Соединение закрыто');
             }
             catch (e) {
                 console.log(e);
-                res.status(400).json({ message: 'Update data error' });
+                res.status(400).json({ message: 'Update data error', statusCode: 400 });
             }
         });
     }
@@ -86,7 +87,7 @@ class profileController {
             }
             catch (e) {
                 console.log(e);
-                res.status(400).json({ message: 'Update data error' });
+                res.status(400).json({ message: 'Update data error', statusCode: 400 });
             }
         });
     }

@@ -16,12 +16,26 @@ class authController {
             const salt = await bcrypt.genSalt(10);
             const hashedPassword = await bcrypt.hash(password, salt);
             const userExistsQuery = `SELECT * FROM Users WHERE email = '${email}'`;
-            const userRegisterQuery = `INSERT INTO Users (email, first_name, last_name, role, password_hash) VALUES ('${email}', '${firstName}', '${lastName}', '${isAdmin}', '${hashedPassword}')`;
+            const userRegisterQuery = `INSERT INTO Users (email, first_name, last_name, role, password_hash, is_registered) VALUES ('${email}', '${firstName}', '${lastName}', '${isAdmin}', '${hashedPassword}', ${1})`;
             connection.query(userExistsQuery, (error: any, results: any) => {
                 if (error) throw error;
-                if (results.length === 1) {
+
+                if (results.length === 1 && results[0].is_registered === 1) {
                     return res.status(409).json({message: 'User already exists', statusCode: 409});
-                } else (
+                }
+                else if (results.length === 1 && results[0].is_registered === 0) {
+                    const updateUserQuery = `UPDATE Users SET first_name='${firstName}', last_name='${lastName}', password_hash='${hashedPassword}', is_registered=${1}, updated_at=CURRENT_TIMESTAMP WHERE email='${email}'`;
+                    connection.query(updateUserQuery, (error: any, results: any) => {
+                        if (error) {
+                            console.log(error)
+                            return res.status(500).send({error: 'Error creating user', statusCode: 500});
+                        } else {
+                            if (error) throw error;
+                            res.status(201).json({message: 'User from order registered successfully', statusCode: 201});
+                        }
+                    });
+                }
+                else (
                     connection.query(userRegisterQuery, (error: any, results: any) => {
                         if (error) throw error;
                         res.status(201).json({message: 'User registered successfully', statusCode: 201});
@@ -51,6 +65,7 @@ class authController {
                         lastName: user.last_name,
                         avatar: user.avatar_url,
                         role: user.role,
+                        isRegistered: user.is_registered,
                         createdAt: user.created_at,
                         updatedAt: user.updated_at
                     };
@@ -117,6 +132,7 @@ class authController {
                         phoneNumber: user.phone_number,
                         avatar: user.avatar_url,
                         role: user.role,
+                        isRegistered: user.is_registered,
                         createdAt: user.created_at,
                         updatedAt: user.updated_at
                     };

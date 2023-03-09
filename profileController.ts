@@ -32,6 +32,7 @@ class profileController {
                                         phoneNumber: user.phone_number,
                                         avatar: user.avatar_url,
                                         role: user.role,
+                                        isRegistered: user.is_registered,
                                         createdAt: user.created_at,
                                         updatedAt: user.updated_at
                                     };
