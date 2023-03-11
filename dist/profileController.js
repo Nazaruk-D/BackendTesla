@@ -11,6 +11,19 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 const index_1 = require("./index");
 const bcrypt = require('bcrypt');
+// type UsersDataType = {
+//     next: {
+//         page: number
+//         limit: number
+//     },
+//     previous: {
+//         page: number
+//         limit: number
+//     },
+//     totalCount: number,
+//     currentPage: number,
+//     users: []
+// }
 class profileController {
     updateUser(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -77,10 +90,10 @@ class profileController {
                 const updateUserPasswordQuery = `UPDATE Users SET password_hash='${hashedPassword}', updated_at=CURRENT_TIMESTAMP WHERE id=${id}`;
                 index_1.connection.query(updateUserPasswordQuery, (error, results) => {
                     if (error) {
-                        return res.status(500).json({ message: 'Error updating user password' });
+                        return res.status(500).json({ message: 'Error updating user password', statusCode: 500 });
                     }
                     else {
-                        return res.status(200).send({ message: 'User password updated successfully' });
+                        return res.status(200).send({ message: 'User password updated successfully', statusCode: 200 });
                     }
                 });
                 return console.log('Соединение закрыто');
@@ -88,6 +101,49 @@ class profileController {
             catch (e) {
                 console.log(e);
                 res.status(400).json({ message: 'Update data error', statusCode: 400 });
+            }
+        });
+    }
+    getUsers(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const page = parseInt(req.query.page) || 1;
+                const limit = parseInt(req.query.limit) || 10;
+                const startIndex = (page - 1) * limit;
+                const endIndex = page * limit;
+                const query = `SELECT COUNT(*) as totalCount FROM Users; SELECT * FROM Users LIMIT ${startIndex}, ${limit};`;
+                index_1.connection.query(query, (error, results) => {
+                    console.log(error);
+                    if (error) {
+                        return res.status(400).json({ message: 'Error getting users', statusCode: 400 });
+                    }
+                    else {
+                        const totalCount = results[0][0].totalCount;
+                        const users = results[1];
+                        const usersData = {};
+                        if (endIndex < totalCount) {
+                            usersData.next = {
+                                page: page + 1,
+                                limit: limit
+                            };
+                        }
+                        if (startIndex > 0) {
+                            usersData.previous = {
+                                page: page - 1,
+                                limit: limit
+                            };
+                        }
+                        usersData.totalCount = totalCount;
+                        usersData.currentPage = page;
+                        usersData.users = users;
+                        return res.status(200).send({ message: 'Getting users successfully', users: usersData, statusCode: 200 });
+                    }
+                });
+                return console.log('Соединение закрыто');
+            }
+            catch (e) {
+                console.log(e);
+                res.status(400).json({ message: 'Get users error', statusCode: 400 });
             }
         });
     }
