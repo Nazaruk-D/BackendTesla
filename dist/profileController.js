@@ -111,32 +111,39 @@ class profileController {
                 const limit = parseInt(req.query.limit) || 10;
                 const startIndex = (page - 1) * limit;
                 const endIndex = page * limit;
-                const query = `SELECT COUNT(*) as totalCount FROM Users; SELECT * FROM Users LIMIT ${startIndex}, ${limit};`;
-                index_1.connection.query(query, (error, results) => {
-                    console.log(error);
+                const totalCountQuery = `SELECT COUNT(*) as totalCount FROM Users;`;
+                index_1.connection.query(totalCountQuery, (error, results) => {
                     if (error) {
-                        return res.status(400).json({ message: 'Error getting users', statusCode: 400 });
+                        return res.status(400).json({ message: 'Error getting total count', statusCode: 400 });
                     }
                     else {
-                        const totalCount = results[0][0].totalCount;
-                        const users = results[1];
-                        const usersData = {};
-                        if (endIndex < totalCount) {
-                            usersData.next = {
-                                page: page + 1,
-                                limit: limit
-                            };
-                        }
-                        if (startIndex > 0) {
-                            usersData.previous = {
-                                page: page - 1,
-                                limit: limit
-                            };
-                        }
-                        usersData.totalCount = totalCount;
-                        usersData.currentPage = page;
-                        usersData.users = users;
-                        return res.status(200).send({ message: 'Getting users successfully', users: usersData, statusCode: 200 });
+                        const totalCount = results[0].totalCount;
+                        const getUsersQuery = `SELECT * FROM Users LIMIT ${startIndex}, ${limit};`;
+                        index_1.connection.query(getUsersQuery, (error, results) => {
+                            if (error) {
+                                return res.status(400).json({ message: 'Error getting users', statusCode: 400 });
+                            }
+                            else {
+                                const users = results;
+                                const usersData = {};
+                                if (endIndex < totalCount) {
+                                    usersData.next = {
+                                        page: page + 1,
+                                        limit: limit
+                                    };
+                                }
+                                if (startIndex > 0) {
+                                    usersData.previous = {
+                                        page: page - 1,
+                                        limit: limit
+                                    };
+                                }
+                                usersData.totalCount = totalCount;
+                                usersData.currentPage = page;
+                                usersData.users = users;
+                                return res.status(200).send({ message: 'Getting users successfully', users: usersData, statusCode: 200 });
+                            }
+                        });
                     }
                 });
                 return console.log('Соединение закрыто');
