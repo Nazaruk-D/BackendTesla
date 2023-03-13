@@ -103,7 +103,7 @@ class profileController {
                     return res.status(400).json({message: 'Error getting total count', statusCode: 400});
                 } else {
                     const totalCount = results[0].totalCount;
-                    const getUsersQuery = `SELECT * FROM Users LIMIT ${startIndex}, ${limit};`;
+                    const getUsersQuery = `SELECT email, first_name as firstName, last_name as lastName, role, DATE_FORMAT(created_at, '%Y-%m-%d %H:%i:%s') as createdAt, DATE_FORMAT(updated_at, '%Y-%m-%d %H:%i:%s') as updatedAt FROM Users LIMIT ${startIndex}, ${limit};`;
 
                     connection.query(getUsersQuery, (error: any, results: any) => {
                         if (error) {
@@ -127,10 +127,10 @@ class profileController {
                                 };
                             }
 
-                            usersData.totalCount = totalCount;
+                            usersData.totalUsersCount = totalCount;
                             usersData.currentPage = page;
                             usersData.users = users;
-                            return res.status(200).send({message: 'Getting users successfully', users: usersData, statusCode: 200});
+                            return res.status(200).send({message: 'Getting users successfully', data: usersData, statusCode: 200});
                         }
                     });
                 }

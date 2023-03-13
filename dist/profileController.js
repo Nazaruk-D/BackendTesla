@@ -118,7 +118,7 @@ class profileController {
                     }
                     else {
                         const totalCount = results[0].totalCount;
-                        const getUsersQuery = `SELECT * FROM Users LIMIT ${startIndex}, ${limit};`;
+                        const getUsersQuery = `SELECT email, first_name as firstName, last_name as lastName, role, DATE_FORMAT(created_at, '%Y-%m-%d %H:%i:%s') as createdAt, DATE_FORMAT(updated_at, '%Y-%m-%d %H:%i:%s') as updatedAt FROM Users LIMIT ${startIndex}, ${limit};`;
                         index_1.connection.query(getUsersQuery, (error, results) => {
                             if (error) {
                                 return res.status(400).json({ message: 'Error getting users', statusCode: 400 });
@@ -138,12 +138,33 @@ class profileController {
                                         limit: limit
                                     };
                                 }
-                                usersData.totalCount = totalCount;
+                                usersData.totalUsersCount = totalCount;
                                 usersData.currentPage = page;
                                 usersData.users = users;
-                                return res.status(200).send({ message: 'Getting users successfully', users: usersData, statusCode: 200 });
+                                return res.status(200).send({ message: 'Getting users successfully', data: usersData, statusCode: 200 });
                             }
                         });
+                    }
+                });
+                return console.log('Соединение закрыто');
+            }
+            catch (e) {
+                console.log(e);
+                res.status(400).json({ message: 'Get users error', statusCode: 400 });
+            }
+        });
+    }
+    deleteUser(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const { email } = req.body;
+                const deleteQuery = `DELETE FROM Users WHERE email='${email}';`;
+                index_1.connection.query(deleteQuery, (error, results) => {
+                    if (error) {
+                        return res.status(400).json({ message: 'Delete user error', statusCode: 400 });
+                    }
+                    else {
+                        return res.status(200).json({ message: 'User deleted successfully', statusCode: 200 });
                     }
                 });
                 return console.log('Соединение закрыто');
