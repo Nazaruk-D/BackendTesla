@@ -94,7 +94,6 @@ class profileController {
             const page = parseInt(req.query.page) || 1;
             const limit = parseInt(req.query.limit) || 10;
             const startIndex = (page - 1) * limit;
-            const endIndex = page * limit;
 
             const totalCountQuery = `SELECT COUNT(*) as totalCount FROM Users;`;
 
@@ -110,23 +109,7 @@ class profileController {
                             return res.status(400).json({message: 'Error getting users', statusCode: 400});
                         } else {
                             const users = results;
-
                             const usersData: any = {};
-
-                            if (endIndex < totalCount) {
-                                usersData.next = {
-                                    page: page + 1,
-                                    limit: limit
-                                };
-                            }
-
-                            if (startIndex > 0) {
-                                usersData.previous = {
-                                    page: page - 1,
-                                    limit: limit
-                                };
-                            }
-
                             usersData.totalUsersCount = totalCount;
                             usersData.currentPage = page;
                             usersData.users = users;
