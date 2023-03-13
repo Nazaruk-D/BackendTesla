@@ -88,6 +88,7 @@ class profileController {
             res.status(400).json({message: 'Update data error', statusCode: 400})
         }
     }
+
     async getUsers(req: any, res: any) {
         try {
             const page = parseInt(req.query.page) || 1;
@@ -132,6 +133,27 @@ class profileController {
                             return res.status(200).send({message: 'Getting users successfully', users: usersData, statusCode: 200});
                         }
                     });
+                }
+            });
+
+            return console.log('Соединение закрыто')
+        } catch (e) {
+            console.log(e)
+            res.status(400).json({message: 'Get users error', statusCode: 400})
+        }
+    }
+
+    async deleteUser(req: any, res: any) {
+        try {
+            const {email} = req.body
+
+            const deleteQuery = `DELETE FROM Users WHERE email='${email}';`;
+
+            connection.query(deleteQuery, (error: any, results: any) => {
+                if (error) {
+                    return res.status(400).json({message: 'Delete user error', statusCode: 400});
+                } else {
+                    return res.status(200).json({message: 'User deleted successfully', statusCode: 200});
                 }
             });
 
