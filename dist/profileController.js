@@ -151,7 +151,17 @@ class profileController {
                         return res.status(400).json({ message: 'Delete user error', statusCode: 400 });
                     }
                     else {
-                        return res.status(200).json({ message: 'User deleted successfully', statusCode: 200 });
+                        const getCountQuery = `SELECT COUNT(*) AS totalUsersCount FROM Users;`;
+                        index_1.connection.query(getCountQuery, (error, results) => {
+                            if (error) {
+                                return res.status(400).json({ message: 'Error getting users count', statusCode: 400 });
+                            }
+                            else {
+                                const totalUsersCount = results[0].totalUsersCount;
+                                console.log(totalUsersCount);
+                                return res.status(200).send({ message: 'User deleted successfully', totalUsersCount, statusCode: 200 });
+                            }
+                        });
                     }
                 });
                 return console.log('Соединение закрыто');
