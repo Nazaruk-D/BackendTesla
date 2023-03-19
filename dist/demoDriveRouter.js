@@ -1,11 +1,11 @@
 "use strict";
 const RouterDemo = require('express');
 const demoDriveRouter = new RouterDemo();
-const demoController = require('./demoController');
+const demoDriveController = require('./demoDriveController');
 const demoDriveEndPoints = {
     updateDemoDriveStatus: '/updateDemoDriveStatus',
-    demoDriveOrders: '/demoDriveOrders',
+    getDemoDriveOrders: '/getDemoDriveOrders',
 };
-demoDriveRouter.put(demoDriveEndPoints.updateDemoDriveStatus, demoController.updateDemoDriveStatus);
-demoDriveRouter.get(demoDriveEndPoints.demoDriveOrders, demoController.demoDriveOrders);
-module.exports = RouterDemo;
+demoDriveRouter.put(demoDriveEndPoints.updateDemoDriveStatus, demoDriveController.updateDemoDriveStatus);
+demoDriveRouter.get(demoDriveEndPoints.getDemoDriveOrders, demoDriveController.getDemoDriveOrders);
+module.exports = demoDriveRouter;
