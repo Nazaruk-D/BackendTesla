@@ -42,6 +42,7 @@ app.use(cors(corsOptions));
 app.use(cookieParser('secret key'))
 app.use('/auth', authRouter);
 app.use('/profile', profileRouter);
+app.use('/demo', profileRouter);
 
 
 app.get("/", (req, res) => {
