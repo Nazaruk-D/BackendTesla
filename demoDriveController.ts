@@ -1,0 +1,60 @@
+import {connection} from "./index";
+
+class demoDriveController {
+    async updateDemoDriveStatus (req: any, res: any) {
+        try {
+            const {id, status} = req.body;
+            console.log(id, status)
+            console.log(req.body)
+            const updateStatusQuery = `UPDATE Orders SET status='${status}', updated_at=CURRENT_TIMESTAMP WHERE id=${id}`;
+
+            connection.query(updateStatusQuery, (error: any, results: any) => {
+                if (error) {
+                    return res.status(500).send({message: 'Error updating schedule order status', statusCode: 500});
+                } else {
+                    return res.status(201).send({message: 'User updated successfully', statusCode: 201});
+                }
+            });
+            return console.log('Соединение закрыто')
+        } catch (e) {
+            console.log(e)
+            res.status(400).json({message: 'Update error', statusCode: 400})
+        }
+    }
+
+    async getDemoDriveOrders(req: any, res: any) {
+        try {
+            const page = parseInt(req.query.page) || 1;
+            const limit = parseInt(req.query.limit) || 10;
+            const startIndex = (page - 1) * limit;
+            const totalCountQuery = `SELECT COUNT(*) as totalCount FROM Orders;`;
+
+            connection.query(totalCountQuery, (error: any, results: any) => {
+                if (error) {
+                    return res.status(400).json({message: 'Error getting total schedule count', statusCode: 400});
+                } else {
+                    const totalCount = results[0].totalCount;
+                    const getScheduleQuery = `SELECT o.*, o.contact_preference AS contactPreference, DATE_FORMAT(o.created_at, '%Y-%m-%d %H:%i:%s') as createdAt, DATE_FORMAT(o.updated_at, '%Y-%m-%d %H:%i:%s') as updatedAt, u.first_name AS firstName, u.last_name AS lastName, u.phone_number AS phoneNumber, u.email AS email, v.vehicle AS model FROM Orders o JOIN Users u ON o.user_id = u.id JOIN Vehicles v ON o.vehicle_id = v.id LIMIT ${startIndex}, ${limit};`;
+                    connection.query(getScheduleQuery, (error: any, results: any) => {
+                        if (error) {
+                            return res.status(400).json({message: 'Error getting schedules', statusCode: 400});
+                        } else {
+                            const orders = results;
+                            const ordersData: any = {};
+                            ordersData.totalDemoDriveOrdersCount = totalCount;
+                            ordersData.currentPage = page;
+                            ordersData.orders = orders;
+                            return res.status(200).send({message: 'Getting schedule successfully', data: ordersData, statusCode: 200});
+                        }
+                    });
+                }
+            });
+            return console.log('Соединение закрыто')
+        } catch (e) {
+            console.log(e)
+            res.status(400).json({message: 'Get users error', statusCode: 400})
+        }
+    }
+}
+
+module.exports = new demoDriveController()

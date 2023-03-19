@@ -67,6 +67,7 @@ class profileController {
             res.status(400).json({message: 'Update data error', statusCode: 400})
         }
     }
+
     async resetPassword(req: any, res: any) {
         try {
             const {id, password} = req.body;

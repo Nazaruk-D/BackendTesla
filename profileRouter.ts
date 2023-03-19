@@ -6,7 +6,7 @@ const profileEndPoints = {
     updateUser: '/update',
     resetPassword: '/resetPassword',
     users: '/users',
-    deleteUser: '/delete'
+    deleteUser: '/delete',
 }
 
 profileRouter.put(profileEndPoints.updateUser, profileController.updateUser)

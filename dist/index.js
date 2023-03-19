@@ -11,6 +11,7 @@ const mysql = require('mysql');
 const cookieParser = require('cookie-parser');
 const authRouter = require('./authRouter');
 const profileRouter = require('./profileRouter');
+const demoDriveRouter = require('./demoDriveRouter');
 const PORT = process.env.PORT || 7542;
 exports.connection = mysql.createConnection({
     host: 'gateway01.eu-central-1.prod.aws.tidbcloud.com',
@@ -45,6 +46,7 @@ app.use(cors(corsOptions));
 app.use(cookieParser('secret key'));
 app.use('/auth', authRouter);
 app.use('/profile', profileRouter);
+app.use('/demo-drive', demoDriveRouter);
 app.get("/", (req, res) => {
     res.json({ message: "hi from Express App" });
     return console.log('Соединение закрыто');
