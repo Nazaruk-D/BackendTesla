@@ -55,6 +55,70 @@ class demoDriveController {
             res.status(400).json({message: 'Get users error', statusCode: 400})
         }
     }
+
+    async createDemoDriveOrder(req: any, res: any) {
+        try {
+            const {email, firstName, lastName, contactPreference, phoneNumber, region, zipCode, model} = req.body;
+            const userExistsQuery = `SELECT * FROM Users WHERE email = '${email}'`;
+
+            connection.query(userExistsQuery, (error: any, results: any) => {
+                if (error) throw error;
+
+                if (results.length === 1) {
+                    const user = results[0];
+                    const regionIdQuery = `SELECT id FROM Regions WHERE region='${region}'`;
+
+                    connection.query(regionIdQuery, (error: any, results: any) => {
+                        if (error) throw error;
+
+                        if (results.length === 1) {
+                            const regionId = results[0].id;
+                            const updateUserQuery = `UPDATE Users SET first_name='${firstName}', last_name='${lastName}', phone_number='${phoneNumber}', region_id=${regionId}, updated_at=CURRENT_TIMESTAMP WHERE email='${email}'`;
+
+                            connection.query(updateUserQuery, (error: any, results: any) => {
+
+                                if (error) {
+                                    return res.status(500).send({error: 'Error updating user', statusCode: 500});
+                                } else {
+                                    const vehicleIdQuery = `SELECT id FROM Vehicles WHERE vehicle='${model}'`;
+                                    connection.query(vehicleIdQuery, (error: any, results: any) => {
+                                        if (error) throw error;
+
+                                        if (results.length === 1) {
+                                            const vehicleId = results[0].id;
+                                            //добавить zipCode
+                                            const createOrderQuery = `INSERT INTO Orders (user_id, vehicle_id, contact_preference) VALUES (${user.id}, ${vehicleId}, '${contactPreference}')`;
+
+                                            connection.query(createOrderQuery, (error: any, results: any) => {
+                                                if (error) {
+                                                    return res.status(500).send({error: 'Error creating demo-drive order', statusCode: 500});
+                                                } else {
+                                                    return res.status(201).json({message: 'Demo-drive order created successfully', statusCode: 201});
+                                                }
+                                            })
+                                        } else {
+                                            return res.status(400).json({message: 'Vehicle search error', statusCode: 400})
+                                        }
+                                    })
+                                }
+                            })
+                        }
+                        else {
+                            return res.status(400).json({message: 'Region search error', statusCode: 400})
+                        }
+                    })
+                }
+                else {
+                    //обработать случай если пользователя нет в БД
+                }
+            });
+
+            return console.log('Соединение закрыто')
+        } catch (e) {
+            console.log(e)
+            res.status(400).json({message: 'Get users error', statusCode: 400})
+        }
+    }
 }
 
 module.exports = new demoDriveController()
