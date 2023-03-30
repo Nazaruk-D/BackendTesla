@@ -15,9 +15,7 @@ class demoDriveController {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const { id, status } = req.body;
-                console.log(id, status);
-                console.log(req.body);
-                const updateStatusQuery = `UPDATE Orders SET status='${status}', updated_at=CURRENT_TIMESTAMP WHERE id=${id}`;
+                const updateStatusQuery = `UPDATE Demo_orders SET status='${status}', updated_at=CURRENT_TIMESTAMP WHERE id=${id}`;
                 index_1.connection.query(updateStatusQuery, (error, results) => {
                     if (error) {
                         return res.status(500).send({ message: 'Error updating schedule order status', statusCode: 500 });
@@ -40,7 +38,7 @@ class demoDriveController {
                 const page = parseInt(req.query.page) || 1;
                 const limit = parseInt(req.query.limit) || 10;
                 const startIndex = (page - 1) * limit;
-                const totalCountQuery = `SELECT COUNT(*) as totalCount FROM Orders;`;
+                const totalCountQuery = `SELECT COUNT(*) as totalCount FROM Demo_orders;`;
                 index_1.connection.query(totalCountQuery, (error, results) => {
                     if (error) {
                         return res.status(400).json({ message: 'Error getting total schedule count', statusCode: 400 });
@@ -100,7 +98,7 @@ class demoDriveController {
                                             if (results.length === 1) {
                                                 const vehicleId = results[0].id;
                                                 //добавить zipCode
-                                                const createOrderQuery = `INSERT INTO Orders (user_id, vehicle_id, contact_preference) VALUES (${user.id}, ${vehicleId}, '${contactPreference}')`;
+                                                const createOrderQuery = `INSERT INTO Demo_orders (user_id, vehicle_id, contact_preference) VALUES (${user.id}, ${vehicleId}, '${contactPreference}')`;
                                                 index_1.connection.query(createOrderQuery, (error, results) => {
                                                     if (error) {
                                                         return res.status(500).send({ error: 'Error creating demo-drive order', statusCode: 500 });
@@ -123,7 +121,51 @@ class demoDriveController {
                         });
                     }
                     else {
-                        //обработать случай если пользователя нет в БД
+                        const regionIdQuery = `SELECT id FROM Regions WHERE region='${region}'`;
+                        index_1.connection.query(regionIdQuery, (error, results) => {
+                            if (error)
+                                throw error;
+                            if (results.length === 1) {
+                                const regionId = results[0].id;
+                                const createUserQuery = `INSERT INTO Users (email, first_name, last_name, region_id, phone_number) VALUES ('${email}', '${firstName}', '${lastName}', ${regionId}, '${phoneNumber}');`;
+                                index_1.connection.query(createUserQuery, (error, results) => {
+                                    if (error) {
+                                        return res.status(500).send({ error: 'Error creating user user', statusCode: 500 });
+                                    }
+                                    else {
+                                        const vehicleIdQuery = `SELECT id FROM Vehicles WHERE vehicle='${model}'`;
+                                        index_1.connection.query(vehicleIdQuery, (error, results) => {
+                                            if (error)
+                                                throw error;
+                                            if (results.length === 1) {
+                                                const vehicleId = results[0].id;
+                                                index_1.connection.query(userExistsQuery, (error, results) => {
+                                                    if (results.length === 1) {
+                                                        const userId = results[0].id;
+                                                        // add zipCode
+                                                        const createOrderQuery = `INSERT INTO Demo_orders (user_id, vehicle_id, contact_preference) VALUES (${userId}, ${vehicleId}, '${contactPreference}');`;
+                                                        index_1.connection.query(createOrderQuery, (error, results) => {
+                                                            if (error) {
+                                                                return res.status(500).send({ error: 'Error creating demo-drive order', statusCode: 500 });
+                                                            }
+                                                            else {
+                                                                return res.status(201).json({ message: 'Demo-drive order created successfully', statusCode: 201 });
+                                                            }
+                                                        });
+                                                    }
+                                                    else {
+                                                        return res.status(500).send({ error: 'Error getting user id', statusCode: 500 });
+                                                    }
+                                                });
+                                            }
+                                            else {
+                                                return res.status(400).json({ message: 'Vehicle search error', statusCode: 400 });
+                                            }
+                                        });
+                                    }
+                                });
+                            }
+                        });
                     }
                 });
                 return console.log('Соединение закрыто');
