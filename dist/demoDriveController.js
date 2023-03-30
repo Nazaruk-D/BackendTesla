@@ -45,7 +45,7 @@ class demoDriveController {
                     }
                     else {
                         const totalCount = results[0].totalCount;
-                        const getScheduleQuery = `SELECT o.*, o.contact_preference AS contactPreference, DATE_FORMAT(o.created_at, '%Y-%m-%d %H:%i:%s') as createdAt, DATE_FORMAT(o.updated_at, '%Y-%m-%d %H:%i:%s') as updatedAt, u.first_name AS firstName, u.last_name AS lastName, u.phone_number AS phoneNumber, u.email AS email, v.vehicle AS model FROM Orders o JOIN Users u ON o.user_id = u.id JOIN Vehicles v ON o.vehicle_id = v.id LIMIT ${startIndex}, ${limit};`;
+                        const getScheduleQuery = `SELECT o.*, o.contact_preference AS contactPreference, DATE_FORMAT(o.created_at, '%Y-%m-%d %H:%i:%s') as createdAt, DATE_FORMAT(o.updated_at, '%Y-%m-%d %H:%i:%s') as updatedAt, u.first_name AS firstName, u.last_name AS lastName, u.phone_number AS phoneNumber, u.email AS email, v.vehicle AS model FROM Demo_orders o JOIN Users u ON o.user_id = u.id JOIN Vehicles v ON o.vehicle_id = v.id LIMIT ${startIndex}, ${limit};`;
                         index_1.connection.query(getScheduleQuery, (error, results) => {
                             if (error) {
                                 return res.status(400).json({ message: 'Error getting schedules', statusCode: 400 });
@@ -130,7 +130,7 @@ class demoDriveController {
                                 const createUserQuery = `INSERT INTO Users (email, first_name, last_name, region_id, phone_number) VALUES ('${email}', '${firstName}', '${lastName}', ${regionId}, '${phoneNumber}');`;
                                 index_1.connection.query(createUserQuery, (error, results) => {
                                     if (error) {
-                                        return res.status(500).send({ error: 'Error creating user user', statusCode: 500 });
+                                        return res.status(500).send({ error: 'Error creating user', statusCode: 500 });
                                     }
                                     else {
                                         const vehicleIdQuery = `SELECT id FROM Vehicles WHERE vehicle='${model}'`;
