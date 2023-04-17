@@ -37,6 +37,7 @@ class demoDriveController {
             try {
                 const page = parseInt(req.query.page) || 1;
                 const limit = parseInt(req.query.limit) || 10;
+                const model = req.query.model;
                 const startIndex = (page - 1) * limit;
                 const totalCountQuery = `SELECT COUNT(*) as totalCount FROM Demo_orders;`;
                 index_1.connection.query(totalCountQuery, (error, results) => {
@@ -45,7 +46,7 @@ class demoDriveController {
                     }
                     else {
                         const totalCount = results[0].totalCount;
-                        const getScheduleQuery = `SELECT o.*, o.contact_preference AS contactPreference, DATE_FORMAT(o.created_at, '%Y-%m-%d %H:%i:%s') as createdAt, DATE_FORMAT(o.updated_at, '%Y-%m-%d %H:%i:%s') as updatedAt, u.first_name AS firstName, u.last_name AS lastName, u.phone_number AS phoneNumber, u.email AS email, v.vehicle AS model FROM Demo_orders o JOIN Users u ON o.user_id = u.id JOIN Vehicles v ON o.vehicle_id = v.id LIMIT ${startIndex}, ${limit};`;
+                        const getScheduleQuery = `SELECT o.*, o.contact_preference AS contactPreference, DATE_FORMAT(o.created_at, '%Y-%m-%d %H:%i:%s') as createdAt, DATE_FORMAT(o.updated_at, '%Y-%m-%d %H:%i:%s') as updatedAt, u.first_name AS firstName, u.last_name AS lastName, u.phone_number AS phoneNumber, u.email AS email, v.vehicle AS model FROM Demo_orders o JOIN Users u ON o.user_id = u.id JOIN Vehicles v ON o.vehicle_id = v.id WHERE v.vehicle = ${model === '' ? 'v.vehicle' : `'${model}'`} LIMIT ${startIndex}, ${limit};`;
                         index_1.connection.query(getScheduleQuery, (error, results) => {
                             if (error) {
                                 return res.status(400).json({ message: 'Error getting schedules', statusCode: 400 });
